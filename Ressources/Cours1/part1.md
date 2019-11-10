@@ -80,6 +80,64 @@ http://localhost/tests
 ```
 
 ## Premier script 
+Index 
+* Les balises PHP 
+* Afficher du texte 
+* Commentaire 
 
+### Les balises PHP 
+Bien entendu le fichier doit avoir l'extension .php et etre accessible par Apache sinon ... bein voilà quoi ;) 
+
+```
+<?php
+    code PHP entre ces balises
+?>
+```
+
+Où mettre le code PHP ... partout 
+```
+<body>
+    //some HTML code 
+    <?php
+        //some PHP code
+    ?>
+</body>
+```
+
+```
+<p>
+    //some text
+    <?php
+        some PHP code
+    ?>
+</p>
+```
+
+```
+<meta <?php //come PHP code ?> />
+```
+
+### Afficher du texte : echo 
+```
+<?php echo 'ceci est du texte <strong>important</strong>'; ?>
+```
+On remarque 
+* simple ou double quote 
+* utiliser le caractère d'échappement \ 
+* \n pour retour à la ligne (ou mieux <br>)
+
+### Commentaire 
+* Commentaires fin de ligne //commentaire 
+* Commentaires plusieurs lignes /* commentaire sur plusieurs lignes */
 
 ## Configurer PHP pour visualiser les erreurs 
+```
+phpinfo();
+```
+
+Trouver la ligne **Loaded Configuration File**
+
+Ensuite 
+* error_reporting : E_ALL 
+* display_errors : on 
+
