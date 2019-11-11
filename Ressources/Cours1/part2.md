@@ -119,6 +119,59 @@ for(initialisation; condition; incrémentation){
 ```
 
 ## Les tableaux 
+Index 
+* Tableaux numérotés 
+* Tableaux Associatifs 
+
+### Tableaux numérotés 
+**Equivaut à un tableau simple**
+donc un système avec des index avec index commençant à 0
+
+**Construction**
+Plusieurs manières de créer un tableau 
+```
+$prenoms = array ('François', 'Michel', 'Nicole', 'Véronique', 'Benoît');
+```
+
+```
+$prenoms[0] = 'François';
+$prenoms[1] = 'Michel';
+$prenoms[2] = 'Nicole';
+```
+
+```
+$prenoms[] = 'François'; // Créera $prenoms[0]
+$prenoms[] = 'Michel'; // Créera $prenoms[1]
+$prenoms[] = 'Nicole'; // Créera $prenoms[2]
+```
+
+**Afficher un tableau numéroté**
+```
+echo $prenoms[1]; //on peut changer aussi la valeur
+```
+### Tableaux associatifs 
+**Equivaut à un dictionnaire**
+Donc pas d'ordre mais un système clef-valeur 
+
+**Construction**
+```
+$coordonnees = array (
+    'prenom' => 'François',
+    'nom' => 'Dupont',
+    'adresse' => '3 Rue du Paradis',
+    'ville' => 'Marseille');
+```
+
+```
+$coordonnees['prenom'] = 'François';
+$coordonnees['nom'] = 'Dupont';
+$coordonnees['adresse'] = '3 Rue du Paradis';
+$coordonnees['ville'] = 'Marseille';
+```
+**Afficher un tableau associatif**
+```
+echo $coordonnees['ville']; //idem pour la modification 
+```
 ## Les fonctions 
 
 ## Plantage 
@@ -166,3 +219,17 @@ on suppose un fichier menu.php
 <?php include("menus.php"); ?> dans le fichier principal -> permet de modulariser son code je suis fan 
 ```
 ## Coder proprement 
+Index 
+* Des noms clairs (de variables et fonctions) : évident 
+* Indenter son code (évident aussi)
+* Code correctement indenté (évident aussi)
+* Standards PSR (PHP Standard Recommandations)
+    * [Liste des standards](https://www.php-fig.org/psr/)
+    * CamelCase pour les classes 
+    * camel_case ou camelCase pour les variables 
+    * CONSTANTES 
+    * utf-8
+    * namespace Vendor\Model;
+    * un fichier : soit un fichier header soit un exe (si on compare avec du C)
+    * le reste j'y reviens dans un second temps 
+    * un outil : PHPCS-Fixer 
