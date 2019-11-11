@@ -225,7 +225,49 @@ De manière générale
 * array_search(valeur, $tableau); //renvoie la clef si valeur trouvée sinon false 
 
 ## Les fonctions 
+Index 
+* Qu'est-ce qu'une fonction 
+* Les fonctions toutes faites de PHP 
+* Créer ses propres fonctions 
 
+### Qu'est-ce qu'une fonction 
+Rien de nouveau (exactement le meme principe que pour les autres langages)
+
+Comme les autres d'ailleurs une fonction retourne au plus une valeur (on peut contourner la chose avec des tableaux de retour)
+
+### Les fonctions toutes faites de PHP 
+En gros ... avant de penser à faire ses propres fonctions aller dans la doc 
+
+[source](https://www.php.net/manual/fr/funcref.php) elles sont classées par catégories 
+
+Exemples de fonctions sur les chaines de caracteres 
+* $nb_caracteres = strlen($chaine); 
+* $nouvelle_chaine = str_replace('b', 'p', 'bim'); 
+* $nouvelle_chaine = str_shuffle($chaine); 
+* $nouvelle_chaine = strtolower($chaine); 
+
+Exemples de fonctions sur les dates 
+* la fonction date 
+    * 'H' -> heure 
+    * 'i' -> Minute 
+    * 'd' -> jour 
+    * 'm' -> mois 
+    * 'Y' -> année 
+* $annee = date('Y'); //un exemple stupide mais bon 
+
+### Créer ses propres fonctions 
+
+De nouveau avant de se lancer dans l'avanture chercher des fonctions déjà faites 
+
+Déclarer une fonction 
+```
+function NomFonction($arg1, $arg2, ...){
+    //some code 
+    //return ? 
+}
+```
+
+Clairement pas assez complet (il faudra que je fasse des recherches annexe sur le langage)
 ## Plantage 
 Index 
 * Erreurs courantes 
