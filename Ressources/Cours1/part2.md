@@ -149,6 +149,31 @@ $prenoms[] = 'Nicole'; // Créera $prenoms[2]
 ```
 echo $prenoms[1]; //on peut changer aussi la valeur
 ```
+
+**Parcourir**
+```
+$tableau = array ('un', 'deux', 'trois'); 
+for($i = 0, $c = count($tableau); $i < $c; $i++){
+    echo '<p>' . $tableau[$i] . '</p>'; 
+}
+```
+
+```
+<?php
+$prenoms = array ('François', 'Michel', 'Nicole', 'Véronique', 'Benoît');
+
+foreach($prenoms as $element)
+{
+    echo $element . '<br />'; // affichera $prenoms[0], $prenoms[1] etc.
+}
+?>
+```
+
+**Rechercher**
+De manière générale 
+* array_key_exists('clef', $tableau); //peu d'interet ici 
+* in_array(valeur, $tableau); //intéressant ici 
+* array_search(valeur, $tableau); //renvoie la clef si valeur trouvée sinon false 
 ### Tableaux associatifs 
 **Equivaut à un dictionnaire**
 Donc pas d'ordre mais un système clef-valeur 
@@ -172,6 +197,33 @@ $coordonnees['ville'] = 'Marseille';
 ```
 echo $coordonnees['ville']; //idem pour la modification 
 ```
+
+**Parcourir**
+```
+<?php
+$coordonnees = array (
+    'prenom' => 'François',
+    'nom' => 'Dupont',
+    'adresse' => '3 Rue du Paradis',
+    'ville' => 'Marseille');
+
+foreach($coordonnees as $clef => $valeur)
+{
+    echo $clef . '<br />'; //on peut autre chose évidemment 
+}
+?>
+```
+
+```
+print_r($tableau); //fonctionne aussi avec les indexés mais juste pour debug dans deux cas 
+```
+
+**Rechercher**
+De manière générale 
+* array_key_exists('clef', $tableau); //peu d'interet ici 
+* in_array(valeur, $tableau); //intéressant ici 
+* array_search(valeur, $tableau); //renvoie la clef si valeur trouvée sinon false 
+
 ## Les fonctions 
 
 ## Plantage 
