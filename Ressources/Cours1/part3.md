@@ -64,7 +64,39 @@ Index
 * Envoi de fichiers (section à part)
 
 ### La base du formulaire 
+Un peu de rappel de HTML (nb for lien avec id et name identifiant pour page2.php)
+```
+<form method = 'post' action = 'page2.php'>
+<p>
+    <label for = 'pseudo'>Votre pseudo : </label><input type = 'text' id = 'pseudo' name = 'pseudo'/><br/>
+    <input type = 'submit' value = 'envoyer'/>
+</p>
+</form>
+```
+Dans la page2.php
+```
+$_POST['pseudo'] aura la valeur donnée ... 
+```
+
 ### Eléments de formulaire 
+Pour les input type = 'text' et les textarea ... confer supra 
+
+**Pour les listes déroulantes :**
+HTML 
+```
+<select id = 'pays' name = 'pays'>
+    <option value = 'France'/>
+    <option value = 'Belgique'/>
+    <option value = 'Allemagne'/>
+</select>
+```
+PHP 
+```
+$_POST['pays'] aura la valeur de l'option cochée ... 
+```
+
+**Les cases à cocher**
+**Les boutons radio**
 ### Ne jamais faire confiance aux données 
 ### Envoi de fichiers (section à part)
 
