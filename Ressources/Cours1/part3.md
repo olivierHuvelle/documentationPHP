@@ -254,6 +254,130 @@ $_SESSION['nom'] = 'Dupont';
 $_SESSION['age'] = 24;
 ?>
 <!DOCTYPE html>
+//code html 
 ```
+
+Exemple utilisation de sessions : page 2 (qui recoit les données) 
+```
+<?php
+session_start(); 
+?>
+Je me souviens de toi ! Tu t'appelles <?php echo $_SESSION['prenom'] . ' ' . $_SESSION['nom']; ?> !<br />
+```
+
 ### Cookies
+Index 
+* Définition du cookie 
+* Ecrire un cookie 
+* Récupérer le contenu d'un cookie 
+
+**Définition** 
+Est un petit fichier que l'on enregistre chez le client (petits fichiers texte) 
+
+Un cookie est stocke généralement une seule information (ex pseudo)
+
+Stockage dans endroit du navigateur (me regarde pas tellement)
+
+**Ecrire un cookie**
+3 paramètres 
+* son nom 
+* sa valeur 
+* sa date d'expiration (sous forme de timestamp) 
+
+Ecrire un cookie 
+```
+<?php setcookie('pseudo', 'Soucoupe', time()+365*24*3600);  ?>
+```
+
+Sécuriser son cookie avec le mode httpOnly 
+```
+<?php setcookie('pseudo', 'Soucoupe', time()+365*24*3600, null, null, false, true);  ?>
+Le dernier paramètre permet d'activer le mode httpOnly 
+```
+
+Utilisation en pratique 
+```
+<?php
+    setcookie('nom', 'valeur', timestamp, null, null, false, true); 
+    setcookie('nom2', 'valeur2', timestamp2, null, null, false, true);
+?>
+<!DOCTYPE html>
+<html>
+    code HTML
+</html>
+```
+
+**Récupérer le contenu d'un cookie**
+Afficher un cookie 
+```
+<p>
+    Hé ! Je me souviens de toi !<br />
+    Tu t'appelles <?php echo $_COOKIE['pseudo']; ?> et tu viens de <?php echo $_COOKIE['pays']; ?> c'est bien ça ?
+</p>
+```
+
+Attention les cookies proviennent du client -> les informations ne sont pas sures 
+
+Si pas défini -> $_COOKIE['nom'] n'existe pas --> faire un isset dessus 
+
+Modification d'un cookie --> en fait il faut écraser les autres 
+
+
 ## Lire et écrire dans un fichier 
+Index 
+* Autoriser l'écriture de fichiers 
+* Ouvrir et fermer un fichier 
+* Lire et écrire dans un fichier 
+
+### Autoriser l'écriture de fichiers (chmod) 
+Le CHMOD est un nombre à 3 chiffres (pour changer le CHMOD) faut passer par le logiciel de FTP 
+* le propriétaire 
+* le groupe 
+* permissions publiques (pour les fichiers faut une permission de 777)
+
+### Ouvrir et fermer un fichier 
+**ouvrir mon fichier**
+```
+$mon_fichier = fopen('compteur.txt', 'r+'); 
+```
+Les modes d'ouverture du fichier 
+* r (lecture seule) 
+* r+ (lecture et écriture) 
+* a (append) , si le fichier n'existe pas -> il est créé 
+* a+ (écriture et lecture) 
+
+**fermer le fichier**
+fclose($mon_fichier); 
+
+### Lire et écrire dans un fichier 
+**Lire**
+2 manières 
+* lecture par caractère -> fgetc 
+* lecture par ligne -> fgets 
+
+Exemple 
+```
+$mon_fichier = fopen('fichier.txt', 'r+'); 
+$ligne = fgets($mon_fichier); //lecture de la première ligne, itératif à chaque fois 
+fclose($mon_fichier); 
+```
+
+**Ecriture**
+fputs(); 
+```
+fputs($mon_fichier, 'texte à écrire'); 
+```
+
+Attention à la position du curseur 
+* si on déplace le curseur avec un fgets/fgetc 
+* fseek($mon_fichier, 0); //au se remet au début du fichier , sert à rien pour a (toujours à la fin) 
+
+Exemple : compteur de vues de la page 
+```
+$mon_fichier = fopen('compteur.txt', 'r+'); //on va juste incrémenter la première ligne 
+$pages_vues = fgets($mon_fichier); 
+$pages_vues++; 
+fseek($mon_fichier, 0); 
+fputs($mon_fichier, $pages_vues); 
+fclose($mon_fichier); 
+```
