@@ -212,5 +212,27 @@ if (isset($_FILES['monfichier']) AND $_FILES['monfichier']['error'] == 0) //si f
 ```
 
 ## Variables superglobales 
+**Informations générales : syntaxe**
+* commencent par _ 
+* nom en MAJUSCULES 
+* sont des tableaux associatifs 
+* sont créées automatiquement par PHP à chaque fois qu'une page est chargée --> ex print_r($_POST)
+
+**Variables superglobales**
+* $_SERVER : $_SERVER['REMOTE_ADDR'] -> adresse IP du client qui a demandé à voir la page.
+
+* $_ENV : variables d'environnement données par le serveur. plutot pour le sysAdmin
+
+* $_SESSION : variables de session. 
+
+* $_COOKIE : valeurs des cookies enregistrés sur l'ordinateur du visiteur.
+
+* $_GET : confer supra.
+
+* $_POST : confer supra. 
+
+* $_FILES : Liste des fichiers envoyés formulaire. 
+
+
 ## Sessions et cookies 
 ## Lire et écrire dans un fichier 
