@@ -181,6 +181,35 @@ if (isset($_FILES['monfichier']) AND $_FILES['monfichier']['error'] == 0) //si f
 ?>
 ```
 ## TP : page protégée par un mot de passe 
+```
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tests en PHP</title>
+        <meta charset = 'utf-8'/>
+    </head>
+    <body>
+        <h1>Bonjour tout le monde</h1>
+        <?php
+            if (!isset($_POST['mdp'])|| $_POST['mdp'] != "kangourou"){
+        ?> 
+            <form method = 'post' action = 'index.php'>
+                <p>
+                    <label for = 'mdp'>Mot de passe : </label><input type = 'password' name = 'mdp' id = 'mdp'/> 
+                </p>
+            </form>
+        <?php
+            }
+            else{
+        ?>
+                <h1>Bonjour tout le monde</h1>
+        <?php        
+            }
+        ?>
+
+    </body>
+</html>
+```
 
 ## Variables superglobales 
 ## Sessions et cookies 
