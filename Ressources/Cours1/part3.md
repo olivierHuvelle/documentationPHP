@@ -233,6 +233,27 @@ if (isset($_FILES['monfichier']) AND $_FILES['monfichier']['error'] == 0) //si f
 
 * $_FILES : Liste des fichiers envoyés formulaire. 
 
-
 ## Sessions et cookies 
+### Sessions
+Fonctionnement des sessions 
+* Visiteur arrive sur le site, on demande une session -> création d'un ID : PHPSESSID (transmet cet identifiant de page en page)
+* On peut créer une infinité de variables de session ex $_SESSION['nom']
+* Le visiteur quitte le site (ou de déconnecte) : on ferme la session (souvent via un timeout) 
+
+2 fonctions 
+* session_start() //à mettre au tout début de chaque page qui va utiliser les sessions 
+* session_destroy() , on peut l'appeler via un bouton déconnexion (ou automatiquement via timeout)
+
+Exemple utilisation de sessions : page 1 (qui génère les données)
+```
+<?php
+session_start();
+// On s'amuse à créer quelques variables de session dans $_SESSION
+$_SESSION['prenom'] = 'Jean'; //on peut déclarer des variables de session partout dans le code 
+$_SESSION['nom'] = 'Dupont';
+$_SESSION['age'] = 24;
+?>
+<!DOCTYPE html>
+```
+### Cookies
 ## Lire et écrire dans un fichier 
