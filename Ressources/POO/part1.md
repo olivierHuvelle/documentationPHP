@@ -265,6 +265,11 @@ Index
 * Hydratation 
 * Gérer sa BD correctement 
 
+### Une entité, un objet 
+
+### Hydratation 
+### Gérer sa BD correctement 
+
 ## TP : mini-jeu de combat 
 Index (voir les backups)
 
