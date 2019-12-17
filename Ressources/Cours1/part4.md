@@ -166,6 +166,7 @@ Structure de la table (les champs)
 
 ```
 $reponse = $bdd->query('Taper une requete SQL'); 
+$reponse = $bdd->query('SELECT * FROM jeux_video'); //par exemple 
 ```
 
 ```
@@ -176,12 +177,12 @@ SELECT * FROM jeux_video
 
 Afficher le résultat d'une requete 
 ```
-$donnees = $repons->fetch(); //donnees est un array -> $donnees['console']; 
+$donnees = $reponse->fetch(); //donnees est un array de la première entrée -> $donnees['console'] affiche le champ console de la première entrée 
 ```
 
 A chaque fois 
 ```
-$reponse = $donnees->fetch(); //on passe à l'entrée suivante 
+$donnees = $reponse->fetch(); //on passe à l'entrée suivante et on récupère sous forme d'array (rien de nouveau) 
 ```
 
 ```
@@ -197,7 +198,7 @@ while ($donnees = $reponse->fetch()) //super puissant donc pour aller voir chacu
 <?php
 }
 
-$reponse->closeCursor(); // Termine le traitement de la requête
+$reponse->closeCursor(); // Termine le traitement de la requête , on parle bien de la requete donc 
 ?>
 ```
 
@@ -317,13 +318,78 @@ Index
 * Traiter les erreurs SQL 
 
 ### INSERT : ajouter des données 
-Index 
-* 
-### UPDATE : modifier les données 
-### DELETE : supprimer les données 
-### Traiter les erreurs SQL 
+```
+INSERT INTO jeux_video(ID, nom, possesseur, console, prix, nbre_joueurs_max, commentaires) VALUES ('', 'Battlefield', 'Patrick', 'PC', 42, 50, 'WW2'); 
+```
+On peut aussi se passer du nom des champs mais moins clair (mais ... plus court!)
+```
+INSERT INTO jeux_video VALUES('', 'Battlefield 1942', 'Patrick', 'PC', 45, 50, 
+	 '2nde guerre mondiale')
+```
 
+**Avec PHP**
+``` 
+try {
+    $bdd = new PDO('mysql:host=localhost;dbname=test;charset=utf8', 'root', '');
+} catch (Exception $e) {
+    die('Erreur : ' . $e->getMessage()); 
+}
+$bdd->exec('INSERT INTO jeux_video(nom, possesseur, console, prix, nbre_joueurs_max, commentaires) VALUES(\'Battlefield 1942\', \'Patrick\', \'PC\', 45, 50, \'2nde guerre mondiale\')');
+```
+
+**Avec une requete préparée**
+```
+Après essai à la connexion à la bdd 
+$req = $bdd->prepare('INSERT INTO jeux_video(nom, possesseur, console, prix, nbre_joueurs_max, commentaires) VALUES(:nom, :possesseur, :console, :prix, :nbre_joueurs_max, :commentaires)');
+$req->execute(array(
+	'nom' => $nom,
+	'possesseur' => $possesseur,
+	'console' => $console,
+	'prix' => $prix,
+	'nbre_joueurs_max' => $nbre_joueurs_max,
+	'commentaires' => $commentaires
+	));
+```
+
+### UPDATE : modifier les données 
+```
+UPDATE jeux_video SET prix = 10, nbre_joueurs_max = 32 WHERE ID = 51
+UPDATE jeux_video SET prix = '10', nbre_joueurs_max = '32' WHERE nom = 'Battlefield 1942' //autre manière de sélectionner
+UPDATE jeux_video SET possesseur = 'Florent' WHERE possesseur = 'Michel' //Florent rachete tous les jeux de Michel
+```
+
+**Avec PHP**
+```
+$nb_modifs = $bdd->exec('UPDATE jeux_video SET prix = 10, nbre_joueurs_max = 32 WHERE nom = \'Battlefield 1942\''); //récupération nb_modifs optionnel 
+```
+
+**Avec une requete préparée**
+```
+$req = $bdd->prepare('UPDATE jeux_video SET prix = :nvprix, nbre_joueurs_max = :nv_nb_joueurs WHERE nom = :nom_jeu');
+$req->execute(array(
+	'nvprix' => $nvprix,
+	'nv_nb_joueurs' => $nv_nb_joueurs,
+	'nom_jeu' => $nom_jeu
+	));
+```
+
+### DELETE : supprimer les données 
+```
+DELETE FROM jeux_video WHERE nom='Battlefield 1942'
+de nouveau on peut utiliser des requetes préparées et aussi avec ->execute ou ->exec si en direct 
+```
+
+### Traiter les erreurs SQL 
+Il faut paramétrer PHP pour afficher les erreurs de SQL 
+* ex Fatal error : Call to a member function fetch() on a non-object 
+
+Comment faire 
+```
+$reponse = $bdd->query('SELECT nom FROM jeux_video') or die(print_r($bdd->errorInfo())); -> précise la ligne de l'erreur SQL ... 
+```
 ## TP : un mini-chat 
+Voir mon fichier annexe : je vais le faire comme projet perso 
+
 ## Les fonctions SQL 
 ## Les dates en SQL 
 ## TP : un blog avec des commentaires 
