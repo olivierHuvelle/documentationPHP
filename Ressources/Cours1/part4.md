@@ -336,7 +336,7 @@ try {
 }
 $bdd->exec('INSERT INTO jeux_video(nom, possesseur, console, prix, nbre_joueurs_max, commentaires) VALUES(\'Battlefield 1942\', \'Patrick\', \'PC\', 45, 50, \'2nde guerre mondiale\')');
 ```
-
+On peut se passer du champs ID car auto-increment 
 **Avec une requete préparée**
 ```
 Après essai à la connexion à la bdd 
@@ -389,8 +389,274 @@ $reponse = $bdd->query('SELECT nom FROM jeux_video') or die(print_r($bdd->errorI
 ```
 ## TP : un mini-chat 
 Voir mon fichier annexe : je vais le faire comme projet perso 
+De gros problèmes avec son truc -> faut utiliser ajax sinon de la grosse merde 
 
 ## Les fonctions SQL 
+Apparemment son très utilisées 
+2 types de fonctions 
+* Les fonctions scalaires : agissent sur chaque entrée 
+* Les fonctions d'agrégat : calculs sont faits sur ensemble de la table pour renvoyer une valeur (ex prix moyen) 
+
+### Les fonctions scalaires 
+Index 
+* Liste des fonctions scalaires utiles 
+* Illustration avec la fonction UPPER 
+
+**Liste des fonctions scalaires utiles**
+* UPPER 
+* LOWER
+* LENGTH --> ex SELECT LENGTH(nom) AS longueurNom FROM jeux_videos; 
+* ROUND --> ex SELECT ROUND(prix, 2) AS prix_precision2 FROM jeux_videos; 
+* [fonctions mathématiques](https://dev.mysql.com/doc/refman/8.0/en/numeric-functions.html)
+* [fonctions chaines de caractères](https://dev.mysql.com/doc/refman/8.0/en/string-functions.html)
+
+**Illustration avec la fonction UPPER**
+Ne modifient pas la table mais renvoient un champ personnalisé (que l'on peut nommé avec AS) 
+
+```
+SELECT UPPER(nom) AS nom_perso FROM jeux_videos; 
+```
+Exemple 
+```
+SELECT UPPER(nom) FROM jeux_videos; 
+SELECT UPPER(nom) AS nom_maj, possesseur, console, prix FROM jeux_video
+```
+
+Avec du PHP 
+```
+$reponse = $bdd->query('SELECT UPPER(nom) AS nom_maj FROM jeux_video');
+while ($donnees = $reponse->fetch())
+{
+	echo $donnees['nom_maj'] . '<br />';
+}
+$reponse->closeCursor();
+```
+
+### Les fonctions d'agrégat 
+Index 
+* Liste des fonctions utiles 
+* Illustration avec la fonction AVG 
+**Liste des fonctions utiles**
+* AVG 
+* SUM 
+* MAX 
+* MIN 
+* COUNT -> ex SELECT COUNT(*) as nbJeux FROM jeux_videos; ou encore SELECT COUNT(*) as nbJeuxOlivier FROM jeux_videos WHERE possesseur='Olivier'; 
+* SELECT COUNT(DISTINCT possesseur) AS nbpossesseurs FROM jeux_video
+
+**ne pas récupérer d'autres champs en meme temps -> pas de sens !**
+
+**Exemple avec la fonction AVG**
+Exemple : calcul de la moyenne 
+SELECT AVG(prix)  AS prix_moyen from jeux_video; 
+```
+	echo $donnees['prix_moyen']; //utilisation de notre champ personnalisé au préalable un fetch unique sur $reponse
+```
+
+Exemple avec un filtre supplémentaire (rien de bien nouveau) 
+```
+SELECT AVG(prix) AS prix_moyen FROM jeux_video WHERE possesseur='Patrick'
+```
+### GROUP BY et HAVING : groupement des données 
+**GROUP BY**
+```
+SELECT AVG(prix) AS prix_moyen, console FROM jeux_video GROUP BY console
+```
+**HAVING**
+```
+SELECT AVG(prix) AS prix_moyen, console FROM jeux_video GROUP BY console HAVING prix_moyen <= 10
+```
+```
+SELECT AVG(prix) AS prix_moyen, console FROM jeux_video WHERE possesseur='Patrick' GROUP BY console HAVING prix_moyen <= 10
+```
 ## Les dates en SQL 
-## TP : un blog avec des commentaires 
+Index 
+* Les champs de type date 
+* Les fonctions de gestion des dates 
+
+### Les champs de type date 
+Les différents types de dates 
+* DATE : date au format YYYY-MM-DD
+* TIME : HH:mm:ss
+* DATETIME : YYYY-MM-DD HH-mm-ss
+* TIMESTAMP : le nb de secondes (pas ms comme en js)
+* YEAR : YYYY 
+
+Créer un champ dateCreation de type DATETIME -> le mettre à current_timestamp
+
+Utilisation des champs de type date 
+```
+SELECT pseudo, message, date FROM minichat WHERE date = '2010-04-02' //si de type DATE
+SELECT pseudo, message, date FROM minichat WHERE date = '2010-04-02 15:28:22 // si type DATETIME
+SELECT pseudo, message, date FROM minichat WHERE date >= '2010-04-02 15:28:22'
+SELECT pseudo, message, date FROM minichat WHERE date >= '2010-04-02 00:00:00' AND date <= '2010-04-18 00:00:00'
+SELECT pseudo, message, date FROM minichat WHERE date BETWEEN '2010-04-02 00:00:00' AND '2010-04-18 00:00:00'
+```
+
+### Les fonctions de gestion des dates 
+[Toutes les fonctions](https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html)
+Index ce celles présentées 
+* NOW() 
+* DAY(), MONTH(), YEAR() 
+* HOUR(), MINUTE(), SECOND() 
+* DATE_FORMAT 
+* DATE_ADD et DATE_SUB 
+
+**NOW**
+```
+INSERT INTO minichat(pseudo, message, date) VALUES('Mateo', 'Message !', NOW()) insertion d'un champ avec la date (date-time ou time) actuelle
+```
+Pour plus de précision (disons surtout moins ambiguité) -> CURDATE et CURTIME
+
+**DAY etc**
+chiant à mourir j'y reviens dans un second temps 
+C'est le moment : à la soupe mon petit gars 
+```
+SELECT pseudo, message, DAY(date) AS jour FROM minichat
+```
+
+**DATE_FORMAT**
+```
+SELECT pseudo, message, DAY(date) AS jour, MONTH(date) AS mois, YEAR(date) AS annee, HOUR(date) AS heure, MINUTE(date) AS minute, SECOND(date) AS seconde FROM minichat
+```
+```
+<?php
+echo $donnees['jour'] . '/' . $donnees['mois'] . '/' . $donnees['annee'] . '...';
+?>
+```
+
+On peut faire beaucoup plus court et propre : 
+```
+SELECT pseudo, message, DATE_FORMAT(date, '%d/%m/%Y %Hh%imin%ss') AS date FROM minichat
+```
+
+**DATE_ADD et DATE_SUB** 
+Comme le nom l'indique pour + ou - des dates 
+```
+SELECT pseudo, message, DATE_ADD(date, INTERVAL 15 DAY) AS date_expiration FROM minichat
+```
+## TP : un blog avec des commentaires (voir mes fichiers annexes)
+
 ## Jointures entre tables 
+Index 
+* Modélisation d'une relation 
+* Qu'est-ce que c'est une jointure ? 
+* Les jointures internes 
+* Les jointures externes 
+
+### Modélisation d'une relation 
+Exemple 
+* Une table qui comprend ID, nom, prénom, numéro de téléphone (table proprietaires i.e)
+* Une table jeux_videos qui comprend ID (son id qui est différent), nom, IDProprietaire, console, prix, nbJoueurs, commentaire
+[Exemple](https://user.oc-static.com/files/222001_223000/222281.png)
+
+Pour relier les 2 tables il faut effectuer une jointure 
+Note perso : pour ceux qui ont remarqué, on peut tout à fait utiliser UML pour modéliser les tables et leurs dépendances/jointures 
+
+### Qu'est-ce que c'est une jointure ? 
+Deux types majeurs de jointure 
+* jointures internes -> ne sélectionnent que les données **qui ont une correspondance** entre les 2 tables 
+* jointures externes -> sélectionnent toutes les données (sans correspondance obligatoire)
+
+Illustration de la différence entre les 2 jointures : 
+
+Si on ajoute une entrée [Chuck, Norris , numTel] dans la table proprietaires , ce dernier n'ayant aucun jeux vidéo -> pas dans la table jeux_videos 
+* Avec une jointure interne : Chuck n'est pas dans le résultat de la requete $
+* Avec une jointure externe : Chuck est bien présent (mais sa valeur pour jeux est évaluée à NULL)
+
+Note perso : je ne vois pas très bien le but des jointures externes (sauf pour comparaison avec des jointures internes)
+
+### Les jointures internes 
+On peut l'effectuer de 2 manières 
+* WHERE (ancienne syntaxe, destinée à disparaitre) je la décrit juste pour info (si on doit faire de la maintenance) 
+* JOIN (Nouvelle, plus efficace, plus lisible, pour la paix dans le monde)
+
+**WHERE**
+Pour des infos sur les noms complets (ici pas nom mais jeux_video.nom car sinon champ ambigu)
+```
+SELECT jeux_video.nom, proprietaires.prenom //aucune ambiguite , pas d'ordre donc de citation des tables 
+FROM proprietaires, jeux_video 
+WHERE jeux_video.ID_proprietaire = proprietaires.ID //précision de la correspondance attendue des entrées 
+```
+
+Utiliser des alias (bonne pratique quand on fait des jointures, - logique)
+```
+SELECT jeux_video.nom AS nom_jeu, proprietaires.prenom AS prenom_proprietaire
+FROM proprietaires, jeux_video
+WHERE jeux_video.ID_proprietaire = proprietaires.ID 
+```
+
+On peut aussi donner des alias aux noms de tables (? bonne pratique ? on perd beaucoup en lisibilité je trouve mais + court ...)
+```
+SELECT j.nom AS nom_jeu, p.prenom AS prenom_proprietaire
+FROM proprietaires AS p, jeux_video AS j
+WHERE j.ID_proprietaire = p.ID
+```
+
+Remarque (mais de nouveau je ne le conseille pas on peut omettre le AS et le remplacer par un espace)
+
+**JOIN**
+```
+SELECT j.nom nom_jeu, p.prenom prenom_proprietaire
+FROM proprietaires p
+INNER JOIN jeux_video j
+ON j.ID_proprietaire = p.ID
+```
+
+Donc en dehors de ces alias abominables on voit que le principe est clair 
+* sélection des données de sortie (comme d'habitude)
+* depuis une table principale (ici FROM table propriétaires)
+* vers une table secondaire (ici jeux_video)
+* ON critère de coincidence 
+
+On peut toujours filtrer les données dans un second temps (après la jointure) 
+```
+SELECT j.nom nom_jeu, p.prenom prenom_proprietaire
+FROM proprietaires p
+INNER JOIN jeux_video j
+ON j.ID_proprietaire = p.ID
+WHERE j.console = 'PC'
+ORDER BY prix DESC
+LIMIT 0, 10
+```
+
+On décortique encore 
+* sélection des données de sortie (les champs)
+* depuis une table principale 
+* vers une table secondaire 
+* avec une clause de réunion 
+* avec une condition (console = PC), affichage par prix décroissant et seulement des 10 premiers champs 
+
+### Les jointures externes 
+2 écritures à connaitre 
+* LEFT JOIN 
+* RIGHT JOIN 
+
+**LEFT JOIN** 
+
+```
+SELECT j.nom nom_jeu, p.prenom prenom_proprietaire
+FROM proprietaires p
+LEFT JOIN jeux_video j
+ON j.ID_proprietaire = p.ID
+```
+Donc 
+* sélection des champs de sortie 
+* depuis table principale (propriétaire) que l'on va garder en entierete (confer LEFT JOIN -> LEFT main)
+* vers table jeux_video 
+* ON critère de réunion (sachant que non restrictif dans ce cas -> RR que le champ nom de jeux_video soit NULL)
+
+**RIGHT JOIN**
+cette fois on garde toutes les données de la table de droite 
+ex 
+```
+SELECT j.nom nom_jeu, p.prenom prenom_proprietaire
+FROM proprietaires p
+RIGHT JOIN jeux_video j
+ON j.ID_proprietaire = p.ID
+```
+Donc 
+* sélection des champs de sortie 
+* depuis la table principale (mais qui ne sera pas prise en totalité)
+* vers la table jeux_video qui sera prise en entiereté 
+* ON critères de réunion (sachant que non restrictif -> Risque d'avoir un prénom évalué à NULL donc dans ce cas) 
