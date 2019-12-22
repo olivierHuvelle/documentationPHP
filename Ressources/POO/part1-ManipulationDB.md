@@ -22,7 +22,7 @@ while ($donnees = $request->fetch(PDO::FETCH_ASSOC)) // ou $request->fetch() tou
     echo $perso->force(); //par exemple (stupide d'accord mais quand meme) 
 }
 ```
-Bref ça change quand meme la vie (pas parlant dans cet exemple il faut l'admettre)
+Bref ça change quand meme la vie :)
 
 # Hydratation 
 Index 
@@ -51,6 +51,24 @@ class Personnage(){
 ```
 
 Comme on s'en doute , le code plus haut est à éviter (beaucoup trop long, pas assez flexible) 
+**Un petit intermède qui va permettre de comprendre le code plus bas**
+```
+class A {
+    //some code 
+    public function hello(){
+        echo 'you say goodbye ... and i say hello'; 
+    }
+}
+```
+Pour appeler la méthode (une création d'alias)
+```
+$a = new A; 
+$method = 'hello'; 
+$a->$method(); //si la méthode a besoin d'arguments on peut aussi lui en fournir ;) 
+```
+
+
+**Et enfin une fonction d'hydratation**
 
 ```
 class Personnage {
@@ -58,8 +76,110 @@ class Personnage {
     public function hydrate(array $donnees){
         foreach($donnees as $key => $value){ //on parcourt le tableau associatif 
             $method = 'set' . ucfirst($key); //on définit la méthode correspondante (importance de camelCase pour le coup :p)
+            if(method_exists($this, $method)){ //si le setter existe (donc bon nom de variable)
+                $this->$method($value); //on appelle le setter avec les données requises  
+            }
         }
     }
+
 }
 ```
 # Gérer sa DB correctement 
+Index 
+* Une classe : un role 
+* Les caractéristiques d'un manager 
+* Les fonctionnalités d'un manager 
+
+## Une classe : un role 
+Ici role de la classe objet = représenter une entrée de la DB (pas de gérer la DB !)
+
+La partie qui va gérer la DB est ... roulement de tambours ... un manager ! CRUD 
+
+On va donc créer une classe (avec son fichier etc etc) PersonnagesManager
+
+## Les caractéristiques d'un manager : ses(son) attribut 
+
+```
+class PersonnagesManager{
+    private $_db; //pour stocker le DAO (PDO dans notre cas)
+
+}
+```
+## Les fonctionnalités d'un manager : ses méthodes (CRUD + setter)
+
+```
+class PersonnagesManager{
+    private $_db; 
+
+    public function __construct($db){
+        $this->setDb($db); //trop de db :P 
+    }
+
+    public function add(Personnage $perso){ //Create
+        $q = $this->_db->prepare('INSERT INTO personnages(nom, forcePerso, degats, niveau, experience) VALUES(:nom, :forcePerso, :degats, :niveau, :experience)'); //requete préparée ... 
+
+        $q->bindValue(':nom', $perso->nom()); //requete préparée - suite ... 
+        $q->bindValue(':forcePerso', $perso->forcePerso(), PDO::PARAM_INT);
+        $q->bindValue(':degats', $perso->degats(), PDO::PARAM_INT);
+        $q->bindValue(':niveau', $perso->niveau(), PDO::PARAM_INT);
+        $q->bindValue(':experience', $perso->experience(), PDO::PARAM_INT);
+
+        $q->execute(); //envoi des données à la DB , par contre j'aurais de base ajouté un closeCursor .. 
+    
+    }
+    public function get($id){ //Read
+        $id = (int) $id;
+
+        $q = $this->_db->query('SELECT id, nom, forcePerso, degats, niveau, experience FROM personnages WHERE id = '.$id);
+        $donnees = $q->fetch(PDO::FETCH_ASSOC);
+
+        return new Personnage($donnees);
+    }
+
+    public function update(Personnage $perso){//Update 
+        $q = $this->_db->prepare('UPDATE personnages SET forcePerso = :forcePerso, degats = :degats, niveau = :niveau, experience = :experience WHERE id = :id');
+
+        $q->bindValue(':forcePerso', $perso->forcePerso(), PDO::PARAM_INT);
+        $q->bindValue(':degats', $perso->degats(), PDO::PARAM_INT);
+        $q->bindValue(':niveau', $perso->niveau(), PDO::PARAM_INT);
+        $q->bindValue(':experience', $perso->experience(), PDO::PARAM_INT);
+        $q->bindValue(':id', $perso->id(), PDO::PARAM_INT);
+
+        $q->execute();
+    }
+
+    public function delete(Personnage $perso){//Delete
+        $this->_db->exec('DELETE FROM personnages WHERE id = '.$perso->id());
+    }
+
+    public function setDb(PDO $dbd){ //setter 
+        $this->_$db;
+    }
+}
+```
+## Utilisation (suppose l'utilisation du snippet auto_download)
+**Création d'une instance de classe Personnage**
+```
+<?php
+$perso = new Personnage([
+  'nom' => 'Victor',
+  'forcePerso' => 5,
+  'degats' => 0,
+  'niveau' => 1,
+  'experience' => 0
+]);
+```
+
+**Création d'une instance du PersonnageManager dépendant d'une instance de PDO**
+```
+$db = new PDO('mysql:host=localhost;dbname=tests', 'root', '');
+$manager = new PersonnagesManager($db);
+```
+
+**Utilisation du manager pour ajouter notre perso càd instance de Personnage**
+```
+$manager->add($perso);
+```
+
+
+
